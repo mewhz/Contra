@@ -16,6 +16,8 @@
   * 账号信息保存在数据库
     * 利用某密码学算法
 * 音乐(可自定义)
+* 皮肤
+  * 使用开源的**BeautyEye**皮肤包[链接]( https://github.com/JackJiang2011/beautyeye )
 * 背景图片(可自定义)
 
 ## 实现
