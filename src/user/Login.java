@@ -1,10 +1,16 @@
 package user;
 
 
+import user.button.ExitButton;
+import user.button.LoginButton;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Login extends JFrame {
+
     private JPanel login_exit;//放置登录和退出按钮
     private JPanel user_text;//放置用户名
     private JPanel pass_text;//放置密码
@@ -15,12 +21,17 @@ public class Login extends JFrame {
     private JLabel pass_name;//密码的文本
     private JLabel title_img;//头部的图片
 
-    private JButton login;//登录
-    private JButton exit;//退出
+    private ImageIcon img;//图片
 
+    private static JButton login;//登录
+    private static JButton exit;//退出
 
-    private JTextField user;//用户名
-    private JTextField pass;//密码
+    private static JTextField user;//用户名
+    private static JTextField pass;//密码
+
+    private final Font font = new Font("华文行楷",Font.PLAIN,20);//字体
+    private final String url = "img/title.gif";//图片路径
+
     //构造方法
     public Login(){
         this.setTitle("欢迎登录XX游戏系统");
@@ -30,13 +41,23 @@ public class Login extends JFrame {
 
         button();//生成底部的按钮
         user_pass();//生成输入框和文本
-        img();
+        img();//生成头部图片
 
-        this.add(login_exit,BorderLayout.SOUTH);
-        this.add(userpass,BorderLayout.CENTER);
-        this.add(img_panel,BorderLayout.NORTH);
+        this.add(login_exit,BorderLayout.SOUTH);//南
+        this.add(userpass,BorderLayout.CENTER);//中间
+        this.add(img_panel,BorderLayout.NORTH);//北
 
         this.setLocationRelativeTo(null);//使窗口在中央显示
+
+        new ExitButton();//退出按钮优化
+
+        login.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new LoginButton(user.getText(),pass.getText());
+            }
+        });
+
         this.setVisible(true);
     }
     //按钮
@@ -46,11 +67,15 @@ public class Login extends JFrame {
         login = new JButton("登录");
         exit  = new JButton("退出");
 
+        login.setFont(font);
+        exit.setFont(font);
+
         login.setPreferredSize(new Dimension(100,50));
         exit.setPreferredSize(new Dimension(100,50));
 
         login_exit.add(login);
         login_exit.add(exit);
+
     }
     //用户名密码
     private void user_pass(){
@@ -58,7 +83,7 @@ public class Login extends JFrame {
         pass_text = new JPanel();
 
         user_name = new JLabel("用户名：");
-        pass_name = new JLabel("密  码：");
+        pass_name = new JLabel("密    码：");
 
         user = new JTextField(30);
         pass = new JPasswordField(30);
@@ -66,6 +91,11 @@ public class Login extends JFrame {
         userpass = new JPanel();
 
         userpass.setLayout(new FlowLayout(FlowLayout.CENTER, 800, 0));
+
+        user_name.setFont(font);
+        pass_name.setFont(font);
+        user.setFont(font);
+        pass.setFont(font);
 
         user_text.add(user_name);
         user_text.add(user);
@@ -78,10 +108,22 @@ public class Login extends JFrame {
     }
     //图片
     private void img(){
-        title_img = new JLabel(new ImageIcon("/img/title.gif"));
+        img = new ImageIcon(url);
+        title_img = new JLabel(img);
         img_panel = new JPanel();
 
+        img.setImage(img.getImage().getScaledInstance(800,200,Image.SCALE_DEFAULT));//修改图片大小
         img_panel.add(title_img);
-        img_panel.setSize(new Dimension(100,200));
+
+    }
+
+    //返回登录按钮
+    public static JButton getLogin(){
+        return login;
+    }
+
+    //返回退出按钮
+    public static JButton getExit(){
+        return exit;
     }
 }
