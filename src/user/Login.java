@@ -2,7 +2,6 @@ package user;
 
 
 import game.Gui;
-import user.button.ExitButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,10 +72,8 @@ public class Login extends JFrame {
 
         login.setPreferredSize(new Dimension(100,50));
         exit.setPreferredSize(new Dimension(100,50));
-
         login_exit.add(login);
         login_exit.add(exit);
-
     }
     //用户名密码
     private void user_pass(){

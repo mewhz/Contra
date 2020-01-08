@@ -1,4 +1,4 @@
-package game;
+package test;
 
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 
@@ -12,27 +12,22 @@ import java.util.concurrent.TimeUnit;
 
 public class Gui extends JFrame implements KeyListener {
 
-    private final int bulletlength = 100;//子弹数量
-    private final int[] VK = {KeyEvent.VK_D,KeyEvent.VK_A,KeyEvent.VK_W,KeyEvent.VK_S,KeyEvent.VK_K,KeyEvent.VK_J};//有效的按键
-
     private JPanel map;//地图
     private JPanel player;//玩家
 
     private Map mapclass = new Map();//地图类
     private Player playerclass = new Player();//主角类
-    private Bullet bulletclass = new Bullet();//子弹类
-
-    private JPanel[] bullerarr = new JPanel[bulletlength];
 
     private boolean left = false;//判断左右,false再右,true再左
     private int up = 0;//判断是否向上
-    private boolean rightbool = false;//是否按下右
-    private boolean jumpbool = false;//是否按下跳
+    private boolean rightbool = false;
+    private boolean jumpbool = false;
     private int i = 0;//用于切换移动图片
     private int j = 0;//用于切换跳跃图片
     private int mapx = 0;//地图的X轴坐标
     private int playerx = 100;//人物的X轴坐标
     private int playery = 170;//人物的Y轴坐标
+    private final int[] VK = {KeyEvent.VK_D,KeyEvent.VK_A,KeyEvent.VK_W,KeyEvent.VK_S,KeyEvent.VK_K};//有效的按键
 
     public Gui(){
         this.setTitle("简易魂斗罗");
@@ -47,9 +42,6 @@ public class Gui extends JFrame implements KeyListener {
     public void imgadd(){
         map = mapclass.getMap();
         player = playerclass.getPlayer();
-        for(int i = 0;i<bulletlength;i++){
-            bullerarr[i] = bulletclass.getBullet();
-        }
 
         this.add(map,-1);
 
