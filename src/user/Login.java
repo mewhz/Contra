@@ -1,8 +1,8 @@
 package user;
 
 
+import game.Gui;
 import user.button.ExitButton;
-import user.button.LoginButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +34,8 @@ public class Login extends JFrame {
 
     //构造方法
     public Login(){
-        this.setTitle("欢迎登录XX游戏系统");
+
+        this.setTitle("欢迎登录简易魂斗罗游戏系统");
         this.setSize(new Dimension(800,600));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
@@ -54,7 +55,7 @@ public class Login extends JFrame {
         login.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new LoginButton(user.getText(),pass.getText());
+                judge(user.getText(),pass.getText());
             }
         });
 
@@ -117,6 +118,23 @@ public class Login extends JFrame {
 
     }
 
+    //判断对错
+    public void judge(String user, String pass){
+        if(user.equals("root")){
+            if(pass.equals("root")){
+                JOptionPane.showMessageDialog(null,"登录成功", "我是一个提示框", JOptionPane.PLAIN_MESSAGE);
+                this.setVisible(false);
+                new Gui();
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"密码错误", "我是一个提示框", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(null,"用户不存在", "我是一个提示框", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     //返回登录按钮
     public static JButton getLogin(){
         return login;
@@ -126,4 +144,5 @@ public class Login extends JFrame {
     public static JButton getExit(){
         return exit;
     }
+
 }

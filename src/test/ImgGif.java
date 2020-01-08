@@ -13,10 +13,13 @@ public class ImgGif extends JFrame  {
     private int k = 0;
 
     private Icon icon = new ImageIcon("img/player/PR/player"+i+".png");
+    private Icon mapp = new ImageIcon("img/MAP/map.jpeg");
 
     private JLabel img = new JLabel(icon);
+    private JLabel map = new JLabel(mapp);
 
     private JPanel imgs = new JPanel();
+    private JPanel maps = new JPanel();
 
     private int x = 100;
     private int y = 100;
@@ -27,9 +30,12 @@ public class ImgGif extends JFrame  {
     public ImgGif(){
         this.setSize(new Dimension(800,600));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        maps.add(map);
         imgs.add(img);
+        this.add(map);
         this.add(imgs);
         this.setLayout(null);
+        maps.setBounds(200,200, mapp.getIconWidth(), mapp.getIconHeight());
         imgs.setBounds(x, y,w, h);
         this.addKeyListener(new KeyAdapter() {
 
@@ -61,9 +67,17 @@ public class ImgGif extends JFrame  {
                         }
                         break;//上
                     case KeyEvent.VK_S:
+                        if(flag){
+                            icon = new ImageIcon("img/player/PL/down.png");
+                            k = 1;
+
+                        }
+                        else{
+                            icon = new ImageIcon("img/player/PR/down.png");
+                            k = 1;
+                        }
                         break;//下
                 }
-                imgs.setBounds(x,y,icon.getIconWidth(), icon.getIconHeight());
                 i = i%12;
                 System.out.println(i);
                 if(!flag&&k!=1){
@@ -72,6 +86,7 @@ public class ImgGif extends JFrame  {
                 else    if(flag&&k!=1){
                     icon = new ImageIcon("img/player/PL/player"+i+".png");
                 }
+                imgs.setBounds(x,y,icon.getIconWidth(), icon.getIconHeight());
                 img.setIcon(icon);
             }
 
