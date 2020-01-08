@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Gui extends JFrame implements KeyListener {
 
-    private final int bulletlength = 100;//子弹数量
+    private final int bulletlength = 1000;//子弹数量
     private final int[] VK = {KeyEvent.VK_D,KeyEvent.VK_A,KeyEvent.VK_W,KeyEvent.VK_S,KeyEvent.VK_K,KeyEvent.VK_J};//有效的按键
 
     private JPanel map;//地图
@@ -23,16 +23,20 @@ public class Gui extends JFrame implements KeyListener {
     private Bullet bulletclass = new Bullet();//子弹类
 
     private JPanel[] bullerarr = new JPanel[bulletlength];
+    private MyThread[] myThreadsarr = new MyThread[bulletlength];
 
     private boolean left = false;//判断左右,false再右,true再左
     private int up = 0;//判断是否向上
+    private boolean lefgbool = false;//是否按下左
     private boolean rightbool = false;//是否按下右
     private boolean jumpbool = false;//是否按下跳
     private int i = 0;//用于切换移动图片
     private int j = 0;//用于切换跳跃图片
+    private int b = 0;//用于判断第几发子弹
     private int mapx = 0;//地图的X轴坐标
     private int playerx = 100;//人物的X轴坐标
     private int playery = 170;//人物的Y轴坐标
+    private int bullery = 200;//子弹的Y轴坐标
 
     public Gui(){
         this.setTitle("简易魂斗罗");
@@ -49,6 +53,8 @@ public class Gui extends JFrame implements KeyListener {
         player = playerclass.getPlayer();
         for(int i = 0;i<bulletlength;i++){
             bullerarr[i] = bulletclass.getBullet();
+            myThreadsarr[i] = new MyThread();
+            this.add(bullerarr[i]);
         }
 
         this.add(map,-1);
@@ -120,6 +126,7 @@ public class Gui extends JFrame implements KeyListener {
                 left = false;
                 break;//左
             case KeyEvent.VK_A:
+                lefgbool = true;
                 playerx-=5;
                 i++;
                 up = 0;
@@ -168,6 +175,10 @@ public class Gui extends JFrame implements KeyListener {
                                 playerx+=50;
                                 jumpbool = false;
                             }
+                            else    if(lefgbool&&jumpbool){
+                                System.out.println("World");
+                                playerx-=50;
+                            }
                             if(left){
                                 playerclass.setPlayerimg(new ImageIcon("img/player/PL/jump"+j+".png"));
                             }
@@ -196,10 +207,10 @@ public class Gui extends JFrame implements KeyListener {
                         else    if(count==40){
                             count++;
                             playery = 170;//回到原本高度
-                            if(left){
+                            if(left&&!jumpbool){
                                 playerclass.setPlayerimg(new ImageIcon("img/player/PL/player0.png"));
                             }
-                            else{
+                            else    if(!jumpbool){
                                 playerclass.setPlayerimg(new ImageIcon("img/player/PR/player0.png"));
                             }
                             playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
@@ -210,15 +221,18 @@ public class Gui extends JFrame implements KeyListener {
                 ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
                 service.scheduleAtFixedRate(run, 30,30, TimeUnit.MILLISECONDS);//线程循环执行
                 break;//跳
+            case KeyEvent.VK_J:
+                bulletremove();
+                break;//攻击
         }
         i = i%12;
 
         //向右
-        if(!left&&up!=1){
+        if(!left&&up!=1&&playery==170){
             playerclass.setPlayerimg(new ImageIcon("img/player/PR/player"+i+".png"));
         }
         //向左
-        else    if(left&&up!=1){
+        else    if(left&&up!=1&&playery==170){
             playerclass.setPlayerimg(new ImageIcon("img/player/PL/player"+i+".png"));
         }
         if(playerx<=0){
@@ -248,6 +262,7 @@ public class Gui extends JFrame implements KeyListener {
         }//左
         else    if(e.getKeyCode()==KeyEvent.VK_A){
             playerclass.setPlayerimg(new ImageIcon("img/player/PL/player0.png"));
+            lefgbool = false;
         }
         //下
         if(e.getKeyCode()==KeyEvent.VK_S&&left){
@@ -274,5 +289,47 @@ public class Gui extends JFrame implements KeyListener {
         }
         playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
         player.setBounds(playerx,playery,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
+    }
+
+    /**
+     * 发射子弹
+     */
+    public void bulletremove(){
+        ScheduledExecutorService service1 = Executors.newSingleThreadScheduledExecutor();
+        service1.scheduleAtFixedRate(myThreadsarr[b], 5, 5, TimeUnit.MILLISECONDS);
+        b++;
+    }
+
+    /**
+     * 线程类
+     */
+    public class MyThread extends Thread{                                 //发射子弹
+        private final Object lock = new Object();
+        private int i = playerx+50;
+
+        /**
+         * 这个方法只能在run 方法中实现，不然会阻塞主线程，导致页面无响应
+         */
+        void onPause() {
+            synchronized (lock) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            if(i!=800){
+                i++;
+                bullerarr[b].setBounds(i,bullery,600,600);          //i是x轴
+            }
+            if(i==800){
+                onPause();
+            }
+            System.out.println(i);
+        }
     }
 }

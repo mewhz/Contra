@@ -61,7 +61,6 @@ public class MyThreadTest extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode()==KeyEvent.VK_J){
                     i = 0;
-                    count++;
                     System.out.println("hello");
                     bulletmove();
                     System.out.println("count="+count);
@@ -84,24 +83,6 @@ public class MyThreadTest extends JFrame {
     public class MyThread extends Thread{                                 //发射子弹
         private final Object lock = new Object();
         private int i = 0;
-
-        /**
-         调用该方法实现线程的暂停
-         */
-        void pauseThread(){
-            pause = true;
-        }
-
-
-        /**
-         调用该方法实现恢复线程的运行
-         */
-        void resumeThread(){
-            pause =false;
-            synchronized (lock){
-                lock.notify();
-            }
-        }
 
         /**
          * 这个方法只能在run 方法中实现，不然会阻塞主线程，导致页面无响应
@@ -134,8 +115,8 @@ public class MyThreadTest extends JFrame {
     public void bulletmove(){
 //        run1.resumeThread();
             ScheduledExecutorService service1 = Executors.newSingleThreadScheduledExecutor();
-            service1.scheduleAtFixedRate(run1[k], 5, 5, TimeUnit.MILLISECONDS);
-            k++;
+            service1.scheduleAtFixedRate(run1[count], 5, 5, TimeUnit.MILLISECONDS);
+            count++;
         System.out.println("k="+k);
     }
 
