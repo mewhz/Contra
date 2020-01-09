@@ -9,7 +9,7 @@ public class Bullet {
 
     public Bullet(){
 
-        bulletimg = new ImageIcon("img/bullet/bullet.png");
+        bulletimg = new ImageIcon("img/bullet/bullet3.png");
         bulletlabel = new JLabel(bulletimg);
         bullet = new JPanel();
 

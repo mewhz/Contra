@@ -1,7 +1,5 @@
 package game;
 
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -13,17 +11,24 @@ import java.util.concurrent.TimeUnit;
 public class Gui extends JFrame implements KeyListener {
 
     private final int bulletlength = 1000;//子弹数量
+    private final int fireSoldierlength = 100;//子弹小兵数量
     private final int[] VK = {KeyEvent.VK_D,KeyEvent.VK_A,KeyEvent.VK_W,KeyEvent.VK_S,KeyEvent.VK_K,KeyEvent.VK_J};//有效的按键
 
     private JPanel map;//地图
     private JPanel player;//玩家
+    private JPanel fireSoldier;//子弹小兵
+    private JPanel fireSoldierBullet;//子弹小兵子弹
 
     private Map mapclass = new Map();//地图类
     private Player playerclass = new Player();//主角类
     private Bullet bulletclass = new Bullet();//子弹类
+    private FireSoldier fireSoldierclass = new FireSoldier();//子弹小兵类
+    private FireSoldierBullet fireSoldierBulletclass = new FireSoldierBullet();//子弹小兵子弹类
 
     private JPanel[] bullerarr = new JPanel[bulletlength];
-    private MyThread[] myThreadsarr = new MyThread[bulletlength];
+    private BulletThread[] BulletThreadsarr = new BulletThread[bulletlength];
+    private FireSoldierThread[] fireSoldierThreadarr = new FireSoldierThread[fireSoldierlength];
+    private int[] bullerXarr = new int[bulletlength];//子弹的X轴坐标数组
 
     private boolean left = false;//判断左右,false再右,true再左
     private int up = 0;//判断是否向上
@@ -33,10 +38,14 @@ public class Gui extends JFrame implements KeyListener {
     private int i = 0;//用于切换移动图片
     private int j = 0;//用于切换跳跃图片
     private int b = 0;//用于判断第几发子弹
-    private int mapx = 0;//地图的X轴坐标
-    private int playerx = 100;//人物的X轴坐标
-    private int playery = 170;//人物的Y轴坐标
-    private int bullery = 200;//子弹的Y轴坐标
+    private int mapX = 0;//地图的X轴坐标
+    private int playerX = 100;//人物的X轴坐标
+    private int playerY = 170;//人物的Y轴坐标
+    private int bullerY = 200;//子弹的Y轴坐标
+    private int fireSoldierX = 500;//子弹小兵的X轴坐标
+    private int fireSoldierY = 190;//子弹小兵的Y轴坐标
+    private int fireSoldierBulletX = 0;//子弹小兵子弹的X轴坐标
+    private int fireSoldierBulletY = 0;//子弹小兵子弹的Y轴坐标
 
     public Gui(){
         this.setTitle("简易魂斗罗");
@@ -45,6 +54,7 @@ public class Gui extends JFrame implements KeyListener {
         this.setLocationRelativeTo(null);//使窗口在中央显示
         this.setLayout(null);
         imgadd();//添加图片
+        fSadd();
         this.setVisible(true);
     }
 
@@ -53,17 +63,22 @@ public class Gui extends JFrame implements KeyListener {
         player = playerclass.getPlayer();
         for(int i = 0;i<bulletlength;i++){
             bullerarr[i] = bulletclass.getBullet();
-            myThreadsarr[i] = new MyThread();
+            BulletThreadsarr[i] = new BulletThread();
             this.add(bullerarr[i]);
         }
+        for(int i = 0;i<fireSoldierlength;i++){
+            fireSoldierThreadarr[i] = new FireSoldierThread();
+        }
+        fireSoldier = fireSoldierclass.getFireSoldier();
+        fireSoldierBullet = fireSoldierBulletclass.getFireSoldierBullet();
 
         this.add(map,-1);
 
         this.add(player,0);
         start();
 
-        map.setBounds(mapx,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
-        player.setBounds(playerx,playery,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
+        map.setBounds(mapX,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
+        player.setBounds(playerX,playerY,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
 
         this.addKeyListener(this);
     }
@@ -71,27 +86,27 @@ public class Gui extends JFrame implements KeyListener {
     public void start(){
         Runnable startrun = new Runnable() {
             int count = 0;
-            int playery = 0;
+            int playerY = 0;
             @Override
             public void run() {
                 if(count<42){
                     j++;
                     j = j%8;
                     count++;
-                    playery += 5;//跳跃的高度
-                    System.out.println("playery="+playery);
+                    playerY += 5;//跳跃的高度
+                    System.out.println("playerY="+playerY);
                     playerclass.setPlayerimg(new ImageIcon("img/player/PR/jump"+j+".png"));
                     playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
-//                    map.setBounds(mapx,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
-                    player.setBounds(playerx,playery, playerclass.getPlayerimg().getIconWidth(), playerclass.getPlayerimg().getIconHeight());
+//                    map.setBounds(mapX,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
+                    player.setBounds(playerX,playerY, playerclass.getPlayerimg().getIconWidth(), playerclass.getPlayerimg().getIconHeight());
                 }
                 else    if(count==42){
                     count++;
-                    this.playery = 170;
+                    this.playerY = 170;
                     playerclass.setPlayerimg(new ImageIcon("img/player/PR/player0.png"));
                     playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
-//                    map.setBounds(mapx,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
-                    player.setBounds(playerx,this.playery, playerclass.getPlayerimg().getIconWidth(), playerclass.getPlayerimg().getIconHeight());
+//                    map.setBounds(mapX,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
+                    player.setBounds(playerX,this.playerY, playerclass.getPlayerimg().getIconWidth(), playerclass.getPlayerimg().getIconHeight());
                 }
             }
         };
@@ -120,20 +135,20 @@ public class Gui extends JFrame implements KeyListener {
         switch(e.getKeyCode()){
             case KeyEvent.VK_D:
                 rightbool = true;
-                mapx-=5;
+                mapX-=5;
                 i++;
                 up = 0;
                 left = false;
                 break;//左
             case KeyEvent.VK_A:
                 lefgbool = true;
-                playerx-=5;
+                playerX-=5;
                 i++;
                 up = 0;
                 left = true;
                 break;//右
             case KeyEvent.VK_W:
-                playery=140;
+                playerY=140;
                 if(left){
                     playerclass.setPlayerimg(new ImageIcon("img/player/PL/up.png"));
                     up = 1;
@@ -148,12 +163,12 @@ public class Gui extends JFrame implements KeyListener {
                 if(left){
                     playerclass.setPlayerimg(new ImageIcon("img/player/PL/down.png"));
                     up = 1;
-                    playery=230;
+                    playerY=230;
                 }
                 else{
                     playerclass.setPlayerimg(new ImageIcon("img/player/PR/down.png"));
                     up = 1;
-                    playery=230;
+                    playerY=230;
                 }
                 break;//下
             case KeyEvent.VK_K:
@@ -166,18 +181,18 @@ public class Gui extends JFrame implements KeyListener {
                             j++;
                             j = j%8;
                             count++;
-                            playery -= 5;//跳跃的高度
-                            System.out.println(playery);
+                            playerY -= 5;//跳跃的高度
+                            System.out.println(playerY);
                             //同时向右与跳跃
                             if(rightbool&&jumpbool){
                                 System.out.println("Hello");
-                                mapx-=50;
-                                playerx+=50;
+                                mapX-=50;
+                                playerX+=50;
                                 jumpbool = false;
                             }
                             else    if(lefgbool&&jumpbool){
                                 System.out.println("World");
-                                playerx-=50;
+                                playerX-=50;
                             }
                             if(left){
                                 playerclass.setPlayerimg(new ImageIcon("img/player/PL/jump"+j+".png"));
@@ -186,14 +201,14 @@ public class Gui extends JFrame implements KeyListener {
                                 playerclass.setPlayerimg(new ImageIcon("img/player/PR/jump"+j+".png"));
                             }
                             playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
-                            player.setBounds(playerx,playery, playerclass.getPlayerimg().getIconWidth(), playerclass.getPlayerimg().getIconHeight());
+                            player.setBounds(playerX,playerY, playerclass.getPlayerimg().getIconWidth(), playerclass.getPlayerimg().getIconHeight());
                         }
                         else    if(count<40){
                             j++;
                             j = j%8;
                             count++;
-                            playery += 5;//跳跃的高度
-                            System.out.println(playery);
+                            playerY += 5;//跳跃的高度
+                            System.out.println(playerY);
                             if(left){
                                 playerclass.setPlayerimg(new ImageIcon("img/player/PL/jump"+j+".png"));
                             }
@@ -201,12 +216,12 @@ public class Gui extends JFrame implements KeyListener {
                                 playerclass.setPlayerimg(new ImageIcon("img/player/PR/jump"+j+".png"));
                             }
                             playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
-                            map.setBounds(mapx,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
-                            player.setBounds(playerx,playery, playerclass.getPlayerimg().getIconWidth(), playerclass.getPlayerimg().getIconHeight());
+                            map.setBounds(mapX,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
+                            player.setBounds(playerX,playerY, playerclass.getPlayerimg().getIconWidth(), playerclass.getPlayerimg().getIconHeight());
                         }
                         else    if(count==40){
                             count++;
-                            playery = 170;//回到原本高度
+                            playerY = 170;//回到原本高度
                             if(left&&!jumpbool){
                                 playerclass.setPlayerimg(new ImageIcon("img/player/PL/player0.png"));
                             }
@@ -214,7 +229,7 @@ public class Gui extends JFrame implements KeyListener {
                                 playerclass.setPlayerimg(new ImageIcon("img/player/PR/player0.png"));
                             }
                             playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
-                            player.setBounds(playerx,playery, playerclass.getPlayerimg().getIconWidth(), playerclass.getPlayerimg().getIconHeight());
+                            player.setBounds(playerX,playerY, playerclass.getPlayerimg().getIconWidth(), playerclass.getPlayerimg().getIconHeight());
                         }
                     }
                 };
@@ -223,38 +238,39 @@ public class Gui extends JFrame implements KeyListener {
                 break;//跳
             case KeyEvent.VK_J:
                 bulletremove();
+                fireSoldierbulletMove();
                 break;//攻击
         }
         i = i%12;
 
         //向右
-        if(!left&&up!=1&&playery==170){
+        if(!left&&up!=1&&playerY==170){
             playerclass.setPlayerimg(new ImageIcon("img/player/PR/player"+i+".png"));
         }
         //向左
-        else    if(left&&up!=1&&playery==170){
+        else    if(left&&up!=1&&playerY==170){
             playerclass.setPlayerimg(new ImageIcon("img/player/PL/player"+i+".png"));
         }
-        if(playerx<=0){
-            playerx=0;
+        if(playerX<=0){
+            playerX=0;
         }
-        if(playerx<=300&&e.getKeyCode()==KeyEvent.VK_D){
-            playerx+=5;
-            mapx+=5;
+        if(playerX<=300&&e.getKeyCode()==KeyEvent.VK_D){
+            playerX+=5;
+            mapX+=5;
         }
-        player.setBounds(playerx,playery,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
+        player.setBounds(playerX,playerY,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
         playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
-        map.setBounds(mapx,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
-        System.out.println("mapx="+mapx);
-        System.out.println("playerx="+playerx);
-        System.out.println("playery="+playery);
+        map.setBounds(mapX,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
+        System.out.println("mapX="+mapX);
+        System.out.println("playerX="+playerX);
+        System.out.println("playerY="+playerY);
     }
 
 
     //按键松开时触发
     @Override
     public void keyReleased(KeyEvent e) {
-        playery=170;
+        playerY=170;
         //右
         if(e.getKeyCode()==KeyEvent.VK_D){
             playerclass.setPlayerimg(new ImageIcon("img/player/PR/player0.png"));
@@ -288,7 +304,7 @@ public class Gui extends JFrame implements KeyListener {
             jumpbool = false;
         }
         playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
-        player.setBounds(playerx,playery,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
+        player.setBounds(playerX,playerY,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
     }
 
     /**
@@ -296,16 +312,17 @@ public class Gui extends JFrame implements KeyListener {
      */
     public void bulletremove(){
         ScheduledExecutorService service1 = Executors.newSingleThreadScheduledExecutor();
-        service1.scheduleAtFixedRate(myThreadsarr[b], 5, 5, TimeUnit.MILLISECONDS);
+        service1.scheduleAtFixedRate(BulletThreadsarr[b], 5, 5, TimeUnit.MILLISECONDS);
         b++;
+        bullerarr[b].setVisible(true);
     }
 
     /**
      * 线程类
      */
-    public class MyThread extends Thread{                                 //发射子弹
+    public class BulletThread extends Thread{                                 //发射子弹
         private final Object lock = new Object();
-        private int i = playerx+50;
+        private int i = playerX+50;
 
         /**
          * 这个方法只能在run 方法中实现，不然会阻塞主线程，导致页面无响应
@@ -324,12 +341,65 @@ public class Gui extends JFrame implements KeyListener {
         public void run() {
             if(i!=800){
                 i++;
-                bullerarr[b].setBounds(i,bullery,600,600);          //i是x轴
+                bullerarr[b].setBounds(i,bullerY,600,600);          //i是x轴
+                bullerXarr[b] = i;
             }
             if(i==800){
                 onPause();
             }
-            System.out.println(i);
+//            System.out.println(i);
         }
+    }
+
+    public void fSadd(){
+        this.add(fireSoldier,0);
+//        this.add(fireSoldierBullet,0);
+//        fireSoldierBullet.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
+        fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
+    }
+
+    /**
+     * 线程类
+     */
+    public class FireSoldierThread extends Thread{                                 //发射子弹
+        private final Object lock = new Object();
+        private int i = playerX+50;
+
+        /**
+         * 这个方法只能在run 方法中实现，不然会阻塞主线程，导致页面无响应
+         */
+        void onPause() {
+            synchronized (lock) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            Rectangle fireSoldierRectangle = new Rectangle(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
+            Rectangle bulletRectangle = new Rectangle(bullerXarr[b],bullerY,bulletclass.getBulletimg().getIconWidth(),bulletclass.getBulletimg().getIconHeight());
+            boolean flag = fireSoldierRectangle.intersects(bulletRectangle);
+
+            if(flag){
+                bullerXarr[b] = 900;
+                fireSoldierY = 910;
+                System.out.println("打中了");
+                System.out.println("bullerXarr="+bullerXarr[b]);
+                fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
+//                bullerarr[b].setBounds(bullerXarr[b],bullerY,bulletclass.getBulletimg().getIconWidth(),bulletclass.getBulletimg().getIconHeight());
+                bullerarr[b].setVisible(false);
+                onPause();
+            }
+//            System.out.println(i);
+        }
+    }
+    public void fireSoldierbulletMove(){
+        System.out.println("进入");
+        ScheduledExecutorService service1 = Executors.newSingleThreadScheduledExecutor();
+        service1.scheduleAtFixedRate(fireSoldierThreadarr[b], 5, 5, TimeUnit.MILLISECONDS);
     }
 }
