@@ -16,18 +16,20 @@ public class Gui extends JFrame implements KeyListener {
 
     private JPanel map;//地图
     private JPanel player;//玩家
-    private JPanel fireSoldier;//子弹小兵
     private JPanel fireSoldierBullet;//子弹小兵子弹
+    private JPanel[] boom = new JPanel[6];//爆炸类
 
     private Map mapclass = new Map();//地图类
     private Player playerclass = new Player();//主角类
     private Bullet bulletclass = new Bullet();//子弹类
     private FireSoldier fireSoldierclass = new FireSoldier();//子弹小兵类
     private FireSoldierBullet fireSoldierBulletclass = new FireSoldierBullet();//子弹小兵子弹类
+    private Boom boomclass = new Boom("img/Boom/boom.gif");
 
     private JPanel[] bullerarr = new JPanel[bulletlength];
     private BulletThread[] BulletThreadsarr = new BulletThread[bulletlength];
     private FireSoldierThread[] fireSoldierThreadarr = new FireSoldierThread[fireSoldierlength];
+
     private int[] bullerXarr = new int[bulletlength];//子弹的X轴坐标数组
 
     private boolean left = false;//判断左右,false再右,true再左
@@ -38,11 +40,13 @@ public class Gui extends JFrame implements KeyListener {
     private int i = 0;//用于切换移动图片
     private int j = 0;//用于切换跳跃图片
     private int b = 0;//用于判断第几发子弹
+    private int bo = 0;//判断第几个爆炸
     private int mapX = 0;//地图的X轴坐标
     private int playerX = 100;//人物的X轴坐标
     private int playerY = 170;//人物的Y轴坐标
     private int bullerY = 200;//子弹的Y轴坐标
-    private int fireSoldierX = 500;//子弹小兵的X轴坐标
+    private int fireSoldierX = 500;//子弹小兵X轴
+    private JPanel fireSoldier;//子弹小兵
     private int fireSoldierY = 190;//子弹小兵的Y轴坐标
     private int fireSoldierBulletX = 0;//子弹小兵子弹的X轴坐标
     private int fireSoldierBulletY = 0;//子弹小兵子弹的Y轴坐标
@@ -69,12 +73,22 @@ public class Gui extends JFrame implements KeyListener {
         for(int i = 0;i<fireSoldierlength;i++){
             fireSoldierThreadarr[i] = new FireSoldierThread();
         }
+
         fireSoldier = fireSoldierclass.getFireSoldier();
+
         fireSoldierBullet = fireSoldierBulletclass.getFireSoldierBullet();
 
-        this.add(map,-1);
+        for(int i = 0;i<6;i++){
+            boom[i] = boomclass.getBoom();
+
+            this.add(boom[i],0);
+        }
+
 
         this.add(player,0);
+        this.add(map,-1);
+
+
         start();
 
         map.setBounds(mapX,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
@@ -123,6 +137,13 @@ public class Gui extends JFrame implements KeyListener {
     //按键被按下时触发
     @Override
     public void keyPressed(KeyEvent e) {
+        System.out.println("playerX="+playerX);
+        System.out.println("playerY="+playerY);
+        System.out.println("fireSoldierX="+fireSoldierX);
+        if(e.getKeyCode()==KeyEvent.VK_Q){
+            System.out.println("创建小兵");
+            fSadd();
+        }
         int flag;
         for(flag = 0;flag<VK.length;flag++){
             if(e.getKeyCode()==VK[flag]){
@@ -141,6 +162,7 @@ public class Gui extends JFrame implements KeyListener {
                 left = false;
                 break;//左
             case KeyEvent.VK_A:
+
                 lefgbool = true;
                 playerX-=5;
                 i++;
@@ -257,9 +279,11 @@ public class Gui extends JFrame implements KeyListener {
         if(playerX<=300&&e.getKeyCode()==KeyEvent.VK_D){
             playerX+=5;
             mapX+=5;
+            fireSoldierX-=5;
         }
         player.setBounds(playerX,playerY,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
         playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
+        fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
         map.setBounds(mapX,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
         System.out.println("mapX="+mapX);
         System.out.println("playerX="+playerX);
@@ -353,9 +377,13 @@ public class Gui extends JFrame implements KeyListener {
 
     public void fSadd(){
         this.add(fireSoldier,0);
+        fireSoldier.setVisible(true);
+//        boom[bo].setVisible(true);
+        System.out.println("fSadd bo="+bo);
 //        this.add(fireSoldierBullet,0);
 //        fireSoldierBullet.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
         fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
+//        f++;
     }
 
     /**
@@ -381,16 +409,21 @@ public class Gui extends JFrame implements KeyListener {
         @Override
         public void run() {
             Rectangle fireSoldierRectangle = new Rectangle(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
-            Rectangle bulletRectangle = new Rectangle(bullerXarr[b],bullerY,bulletclass.getBulletimg().getIconWidth(),bulletclass.getBulletimg().getIconHeight());
+            Rectangle bulletRectangle      = new Rectangle(bullerXarr[b],bullerY,bulletclass.getBulletimg().getIconWidth(),bulletclass.getBulletimg().getIconHeight());
             boolean flag = fireSoldierRectangle.intersects(bulletRectangle);
 
             if(flag){
-                bullerXarr[b] = 900;
-                fireSoldierY = 910;
+                System.out.println("bo="+bo);
+                boom[bo].setBounds(fireSoldier.getX(),fireSoldierY,115,85 );
                 System.out.println("打中了");
-                System.out.println("bullerXarr="+bullerXarr[b]);
-                fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
-//                bullerarr[b].setBounds(bullerXarr[b],bullerY,bulletclass.getBulletimg().getIconWidth(),bulletclass.getBulletimg().getIconHeight());
+                fireSoldier.setVisible(false);
+                try {
+                    Thread.sleep(400);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                boom[bo].setVisible(false);
+                bo++;
                 bullerarr[b].setVisible(false);
                 onPause();
             }

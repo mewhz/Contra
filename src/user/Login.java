@@ -110,7 +110,7 @@ public class Login extends JFrame {
         title_img = new JLabel(img);
         img_panel = new JPanel();
 
-        img.setImage(img.getImage().getScaledInstance(800,200,Image.SCALE_DEFAULT));//修改图片大小
+        img.setImage(img.getImage().getScaledInstance(800,350,Image.SCALE_DEFAULT));//修改图片大小
         img_panel.add(title_img);
 
     }

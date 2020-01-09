@@ -15,7 +15,7 @@ public class Main {
         {
             //
         }
-//        new Login();
-        new Gui();
+        new Login();
+//        new Gui();
     }
 }

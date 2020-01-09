@@ -9,7 +9,7 @@ public class Map  {
     private JPanel map;
 
     public Map(){
-        mapimg = new ImageIcon("img/MAP/map.jpeg");
+        mapimg = new ImageIcon("img/MAP/map.png");
         maplabel = new JLabel(mapimg);
         map = new JPanel();
         map.add(maplabel);

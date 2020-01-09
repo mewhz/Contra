@@ -7,8 +7,9 @@ public class Boom {
     private JLabel boomlabel;
     private JPanel boom;
 
-    public Boom(){
-        boomimg  = new ImageIcon("img/Boom/boom1.png");
+    public Boom(){}
+    public Boom(String url){
+        boomimg = new ImageIcon(url);
         boomlabel = new JLabel(boomimg);
         boom = new JPanel();
 

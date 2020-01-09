@@ -18,12 +18,14 @@ public class Gui extends JFrame implements KeyListener {
     private JPanel player;//玩家
     private JPanel fireSoldier;//子弹小兵
     private JPanel fireSoldierBullet;//子弹小兵子弹
+    private JPanel boom;//爆炸类
 
     private Map mapclass = new Map();//地图类
     private Player playerclass = new Player();//主角类
     private Bullet bulletclass = new Bullet();//子弹类
     private FireSoldier fireSoldierclass = new FireSoldier();//子弹小兵类
     private FireSoldierBullet fireSoldierBulletclass = new FireSoldierBullet();//子弹小兵子弹类
+    private Boom boomclass = new Boom("img/Boom/boom.gif");
 
     private JPanel[] bullerarr = new JPanel[bulletlength];
     private BulletThread[] BulletThreadsarr = new BulletThread[bulletlength];
@@ -72,9 +74,15 @@ public class Gui extends JFrame implements KeyListener {
         fireSoldier = fireSoldierclass.getFireSoldier();
         fireSoldierBullet = fireSoldierBulletclass.getFireSoldierBullet();
 
-        this.add(map,-1);
+        boom = boomclass.getBoom();
+
+        this.add(boom,0);
+
 
         this.add(player,0);
+        this.add(map,-1);
+
+
         start();
 
         map.setBounds(mapX,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
@@ -353,8 +361,8 @@ public class Gui extends JFrame implements KeyListener {
 
     public void fSadd(){
         this.add(fireSoldier,0);
-//        this.add(fireSoldierBullet,0);
-//        fireSoldierBullet.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
+        this.add(fireSoldierBullet,0);
+        fireSoldierBullet.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
         fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
     }
 
@@ -381,16 +389,19 @@ public class Gui extends JFrame implements KeyListener {
         @Override
         public void run() {
             Rectangle fireSoldierRectangle = new Rectangle(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
-            Rectangle bulletRectangle = new Rectangle(bullerXarr[b],bullerY,bulletclass.getBulletimg().getIconWidth(),bulletclass.getBulletimg().getIconHeight());
+            Rectangle bulletRectangle      = new Rectangle(bullerXarr[b],bullerY,bulletclass.getBulletimg().getIconWidth(),bulletclass.getBulletimg().getIconHeight());
             boolean flag = fireSoldierRectangle.intersects(bulletRectangle);
 
             if(flag){
-                bullerXarr[b] = 900;
-                fireSoldierY = 910;
+                boom.setBounds(fireSoldier.getX(),fireSoldierY,115,85 );
                 System.out.println("打中了");
-                System.out.println("bullerXarr="+bullerXarr[b]);
-                fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
-//                bullerarr[b].setBounds(bullerXarr[b],bullerY,bulletclass.getBulletimg().getIconWidth(),bulletclass.getBulletimg().getIconHeight());
+                fireSoldier.setVisible(false);
+                try {
+                    Thread.sleep(400);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                boom.setVisible(false);
                 bullerarr[b].setVisible(false);
                 onPause();
             }
