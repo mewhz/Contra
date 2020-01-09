@@ -45,7 +45,7 @@ public class Gui extends JFrame implements KeyListener {
     private int playerX = 100;//人物的X轴坐标
     private int playerY = 170;//人物的Y轴坐标
     private int bullerY = 200;//子弹的Y轴坐标
-    private int fireSoldierX = 500;//子弹小兵X轴
+    private final int fireSoldierX = 500;//子弹小兵X轴
     private JPanel fireSoldier;//子弹小兵
     private int fireSoldierY = 190;//子弹小兵的Y轴坐标
     private int fireSoldierBulletX = 0;//子弹小兵子弹的X轴坐标
@@ -279,7 +279,6 @@ public class Gui extends JFrame implements KeyListener {
         if(playerX<=300&&e.getKeyCode()==KeyEvent.VK_D){
             playerX+=5;
             mapX+=5;
-            fireSoldierX-=5;
         }
         player.setBounds(playerX,playerY,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
         playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
@@ -371,19 +370,13 @@ public class Gui extends JFrame implements KeyListener {
             if(i==800){
                 onPause();
             }
-//            System.out.println(i);
         }
     }
 
     public void fSadd(){
         this.add(fireSoldier,0);
         fireSoldier.setVisible(true);
-//        boom[bo].setVisible(true);
-        System.out.println("fSadd bo="+bo);
-//        this.add(fireSoldierBullet,0);
-//        fireSoldierBullet.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
         fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
-//        f++;
     }
 
     /**
