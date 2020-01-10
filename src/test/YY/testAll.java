@@ -34,29 +34,16 @@ public class testAll extends JFrame {
 
         jla = new JLabel();             //开枪小兵的标签
         jla1 = new JLabel();            //子弹的标签
-        jlaMap = new JLabel();          //地图的标签
-        jlaMS = new JLabel();           //移动小兵的标签
-
-        icon = new ImageIcon("img/fireSoldier/Soldier.png");         //地图图片
         icon1 = new ImageIcon("img/fireSoldier/bullet.png");      //子弹图片
-        map = new ImageIcon("img/MAP/map.jpeg");                //地图
 
-        jla.setIcon(icon);
         jla1.setIcon(icon1);
-        jlaMS.setIcon(iconMS);
-        jlaMap.setIcon(map);
 
-        jpa.add(jlaMS);
         jpa.add(jla1);
-        jpa.add(jla);
-        jpa.add(jlaMap);
 
 
         jla.setBounds(soldierX,195,100,100);
-        jlaMap.setBounds(mapX,0,8921,600);
 
         setBounds(300,50,800,630);
-        icon.setImage(icon.getImage().getScaledInstance(80,110, Image.SCALE_DEFAULT));
 
         Runnable run1 = new Runnable(){                                 //发射子弹
             @Override
@@ -72,69 +59,32 @@ public class testAll extends JFrame {
         service1.scheduleAtFixedRate(run1, 5, 5, TimeUnit.MILLISECONDS);
 
 
-        this.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-
-            }
-            //按下
-            @Override
-            public void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()){
-                    case KeyEvent.VK_D:
-                        mapX -= 5;
-                        soldierX -= 5;
-                        bulletX -= 5;
-                        jla1.setBounds(i,166,100,100);
-                        jla.setBounds(soldierX,195,100,100);
-                        jlaMap.setBounds(mapX,0,8921,600);
-                        break;
-                }
-            }
-            //松开
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-            }
-
-        });
-
-        Runnable run = new Runnable(){                                          //小兵的移动
-            @Override
-            public void run() {
-                jlaMS.setBounds(RunSoldier,soldierMY,800,600);        //i是x轴
-                if (RunSoldier != 500){                                         //jla1是标签名字
-                    RunSoldier = RunSoldier + 10;                               //icon1是图标
-                    iconMS = new ImageIcon("NoGunSoldier/"+soldierFlag+".png");      //soldierFlag是图片的名字
-                    iconMS.setImage(iconMS.getImage().getScaledInstance(70,90, Image.SCALE_DEFAULT));
-                    jlaMS.setIcon(iconMS);
-                    soldierFlag++;
-                    if (soldierFlag == 10){
-                        soldierFlag = 1;
-                    }
-                }
-
-                Rectangle bulletRectangle = new Rectangle(jla1.getX(),jla.getY(),10,10);
-                Rectangle planeRectangle = new Rectangle(jlaMS.getX(),jlaMS.getY()+250,70,90);
-                boolean collide= bulletRectangle.intersects(planeRectangle);
-
-
-
-                if (collide == true){
-                    soldierMY = 100;
-                    System.out.println("打中了");
-                }
-
-            }
-        };
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(run, 70, 70, TimeUnit.MILLISECONDS);
-
-
-
-
-
-
+//        this.addKeyListener(new KeyAdapter() {
+//            @Override
+//            public void keyTyped(KeyEvent e) {
+//
+//            }
+//            //按下
+//            @Override
+//            public void keyPressed(KeyEvent e) {
+//                switch (e.getKeyCode()){
+//                    case KeyEvent.VK_D:
+//                        mapX -= 5;
+//                        soldierX -= 5;
+//                        bulletX -= 5;
+//                        jla1.setBounds(i,166,100,100);
+//                        jla.setBounds(soldierX,195,100,100);
+//                        jlaMap.setBounds(mapX,0,8921,600);
+//                        break;
+//                }
+//            }
+//            //松开
+//            @Override
+//            public void keyReleased(KeyEvent e) {
+//
+//            }
+//
+//        });
 
         this.add(jpa);
         this.setSize(800,630);

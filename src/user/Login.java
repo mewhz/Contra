@@ -7,8 +7,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class Login extends JFrame {
+public class Login extends JFrame implements KeyListener {
 
     private JPanel login_exit;//放置登录和退出按钮
     private JPanel user_text;//放置用户名
@@ -57,6 +59,7 @@ public class Login extends JFrame {
                 judge(user.getText(),pass.getText());
             }
         });
+        this.addKeyListener(this);
 
         this.setVisible(true);
     }
@@ -142,4 +145,18 @@ public class Login extends JFrame {
         return exit;
     }
 
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        System.out.println("kkk");
+    }
 }

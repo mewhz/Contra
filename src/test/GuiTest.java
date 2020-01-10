@@ -45,7 +45,7 @@ public class GuiTest extends JFrame implements KeyListener {
     private int playerX = 100;//人物的X轴坐标
     private int playerY = 170;//人物的Y轴坐标
     private int bullerY = 200;//子弹的Y轴坐标
-    private int fireSoldierX = 500;//子弹小兵X轴
+    private int fireSoldierX = 700;//子弹小兵X轴
     private JPanel fireSoldier;//子弹小兵
     private int fireSoldierY = 190;//子弹小兵的Y轴坐标
     private int fireSoldierBulletX = 0;//子弹小兵子弹的X轴坐标
@@ -58,7 +58,7 @@ public class GuiTest extends JFrame implements KeyListener {
         this.setLocationRelativeTo(null);//使窗口在中央显示
         this.setLayout(null);
         imgadd();//添加图片
-        fSadd();
+//        fSadd();
         this.setVisible(true);
     }
 
@@ -160,6 +160,10 @@ public class GuiTest extends JFrame implements KeyListener {
                 i++;
                 up = 0;
                 left = false;
+                if(mapX==-1000){
+                    System.out.println("地图X轴坐标="+mapX);
+                    fSadd();
+                }
                 break;//左
             case KeyEvent.VK_A:
 
@@ -283,7 +287,7 @@ public class GuiTest extends JFrame implements KeyListener {
         }
         player.setBounds(playerX,playerY,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
         playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
-        fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
+//        fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
         map.setBounds(mapX,-5,mapclass.getMapimg().getIconWidth(),mapclass.getMapimg().getIconHeight());
         System.out.println("mapX="+mapX);
         System.out.println("playerX="+playerX);
@@ -379,7 +383,7 @@ public class GuiTest extends JFrame implements KeyListener {
         this.add(fireSoldier,0);
         fireSoldier.setVisible(true);
 //        boom[bo].setVisible(true);
-        System.out.println("fSadd bo="+bo);
+//        System.out.println("fSadd bo="+bo);
 //        this.add(fireSoldierBullet,0);
 //        fireSoldierBullet.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
         fireSoldier.setBounds(fireSoldierX,fireSoldierY,fireSoldierclass.getFireSoldierimg().getIconWidth(),fireSoldierclass.getFireSoldierimg().getIconHeight());
