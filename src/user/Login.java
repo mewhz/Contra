@@ -50,7 +50,9 @@ public class Login extends JFrame implements KeyListener {
         this.add(img_panel,BorderLayout.NORTH);//北
 
         this.setLocationRelativeTo(null);//使窗口在中央显示
-
+        Toolkit tk=Toolkit.getDefaultToolkit();
+        Image image=tk.createImage("img/icon1.ico"); /*image.gif是你的图标*/
+        this.setIconImage(image);
         new ExitButton();//退出按钮优化
 
         login.addActionListener(new ActionListener() {
@@ -124,7 +126,7 @@ public class Login extends JFrame implements KeyListener {
             if(pass.equals("root")){
                 JOptionPane.showMessageDialog(null,"登录成功", "我是一个提示框", JOptionPane.PLAIN_MESSAGE);
                 this.setVisible(false);
-                new Gui();
+                new ChangModelTest();
             }
             else{
                 JOptionPane.showMessageDialog(null,"密码错误", "我是一个提示框", JOptionPane.ERROR_MESSAGE);

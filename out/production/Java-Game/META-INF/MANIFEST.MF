@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: miglayout-swing.jar miglayout-core.jar beautyeye_lnf.jar
+Main-Class: main.Main
+

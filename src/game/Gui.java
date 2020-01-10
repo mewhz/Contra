@@ -1,6 +1,7 @@
 package game;
 
 import test.YY.testAll;
+import user.sounds;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,6 +41,8 @@ public class Gui extends JFrame implements KeyListener {
     private noGunSoldiermove noGunSoldiermove = new noGunSoldiermove();
 
     private int[] bullerXarr = new int[bulletlength];//子弹的X轴坐标数组
+    private JLabel jlaBoss = new JLabel();//////////////////////////////////////////////////////////////////////////////
+    private ImageIcon iconBoss = new ImageIcon("img/MAP/boss.png");/////////////////////////////////////////////
 
     private boolean left = false;//判断左右,false再右,true再左
     private int up = 0;//判断是否向上
@@ -47,6 +50,8 @@ public class Gui extends JFrame implements KeyListener {
     private boolean rightbool = false;//是否按下右
     private boolean jumpbool = false;//是否按下跳
     private boolean fireSoldierbool = true;//小兵是否存活
+    private int BossX = 800;//boss出现时候的初始坐标
+    private int BossFlag = 1;//boss被打的时候的flag
     private int i = 0;//用于切换移动图片
     private int j = 0;//用于切换跳跃图片
     private int b = 0;//用于判断第几发子弹
@@ -171,6 +176,16 @@ public class Gui extends JFrame implements KeyListener {
                     ScheduledExecutorService service1 = Executors.newSingleThreadScheduledExecutor();
                     service1.scheduleAtFixedRate(noGunSoldierThread, 5, 5, TimeUnit.MILLISECONDS);
                 }
+                //////////////////////////////////////////////////////////////////////////////
+
+                if (mapX <= -7100){
+                    jlaBoss.setIcon(iconBoss);
+                    this.add(jlaBoss,2);
+                    BossX -= 5;
+                    jlaBoss.setBounds(BossX,110,315,468);
+                    System.out.println("Boss出现了！！！   "+BossX);
+                }
+                /////////////////////////////////////////////////////////////////////////////////
 //                new testAll();
                 break;//右
             case KeyEvent.VK_A:
@@ -288,6 +303,11 @@ public class Gui extends JFrame implements KeyListener {
         if(playerX<=300&&e.getKeyCode()==KeyEvent.VK_D){
             playerX+=5;
             mapX+=5;
+            ////////////////////////////////////////////////////////////////////////////////////////////
+            if(mapX <= -6800){
+                BossX+=5;
+            }
+            ////////////////////////////////////////////////////////////////////////////////////////////
         }
         player.setBounds(playerX,playerY,playerclass.getPlayerimg().getIconWidth(),playerclass.getPlayerimg().getIconHeight());
         playerclass.getPlayerlabel().setIcon(playerclass.getPlayerimg());
@@ -407,7 +427,19 @@ public class Gui extends JFrame implements KeyListener {
                 i++;
                 System.out.println("playerX="+playerX);
                 System.out.println("i="+i);
-
+                //////////////////////////////////////////////////////////////////////////////////////////////////////
+                Rectangle bulletRectangle = new Rectangle(i,bullerY,60,10);       //子弹
+                Rectangle planeRectangle = new Rectangle(BossX,110,315,468);      //boss
+                boolean collide = bulletRectangle.intersects(planeRectangle);
+                if (collide == true){
+                    BossFlag++;
+                    if (BossFlag == 2000){
+                        jlaBoss.setVisible(false);
+                        sounds at = new sounds("sound/title.wav");
+                        at.start();
+                    }
+                }
+                //////////////////////////////////////////////////////////////////////////////////////////////////
                 bullerarr[b].setBounds(i,bullerY,600,600);          //i是x轴
                 bullerXarr[b] = i;
             }
