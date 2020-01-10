@@ -103,8 +103,7 @@ public class ChangModelTest extends JFrame implements KeyListener{
                 start=false;
             }
             if (start) {
-
-                timer.schedule(myTimerTask,5000);
+                timer.schedule(myTimerTask,3000);
                 System.out.println("正在停止");
             }
         }

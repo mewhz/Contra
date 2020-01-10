@@ -1,12 +1,11 @@
 <component name="ArtifactManager">
-  <artifact name="Java-Game:jar">
+  <artifact type="jar" name="Java-Game:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/Java_Game_jar</output-path>
-    <root id="root">
-      <element id="archive" name="Java-Game.jar">
-        <element id="module-output" name="Java-Game" />
-      </element>
-      <element id="library" level="project" name="MigLayout" />
-      <element id="file-copy" path="$PROJECT_DIR$/lib/beautyeye_lnf.jar" />
+    <root id="archive" name="Java-Game.jar">
+      <element id="module-output" name="Java-Game" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/miglayout-swing.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/miglayout-core.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/beautyeye_lnf.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

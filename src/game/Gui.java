@@ -1,12 +1,15 @@
 package game;
 
 import test.YY.testAll;
+import user.ChangModelTest;
 import user.sounds;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +20,7 @@ public class Gui extends JFrame implements KeyListener {
     private final int fireSoldierlength = 100;//子弹小兵数量
     private final int[] VK = {KeyEvent.VK_D,KeyEvent.VK_A,KeyEvent.VK_W,KeyEvent.VK_S,KeyEvent.VK_K,KeyEvent.VK_J};//有效的按键
 
+    private Timer endtimer = new Timer();
     private JPanel map;//地图
     private JPanel player;//玩家
     private JPanel fireSoldier;//子弹小兵
@@ -43,6 +47,10 @@ public class Gui extends JFrame implements KeyListener {
     private int[] bullerXarr = new int[bulletlength];//子弹的X轴坐标数组
     private JLabel jlaBoss = new JLabel();//////////////////////////////////////////////////////////////////////////////
     private ImageIcon iconBoss = new ImageIcon("img/MAP/boss.png");/////////////////////////////////////////////
+
+
+    private EndTimerTask endTimerTask = new EndTimerTask(this);
+
 
     private boolean left = false;//判断左右,false再右,true再左
     private int up = 0;//判断是否向上
@@ -83,7 +91,7 @@ public class Gui extends JFrame implements KeyListener {
         player = playerclass.getPlayer();
         for(int i = 0;i<bulletlength;i++){
             bullerarr[i] = bulletclass.getBullet();
-            BulletThreadsarr[i] = new BulletThread();
+            BulletThreadsarr[i] = new BulletThread(this);
             this.add(bullerarr[i]);
         }
         for(int i = 0;i<fireSoldierlength;i++){
@@ -404,7 +412,11 @@ public class Gui extends JFrame implements KeyListener {
     public class BulletThread extends Thread{                                 //发射子弹
         private final Object lock = new Object();
         private int i  = 0;
-
+        private JFrame re;
+        public BulletThread(JFrame re){
+            super();
+            this.re = re;
+        }
         /**
          * 这个方法只能在run 方法中实现，不然会阻塞主线程，导致页面无响应
          */
@@ -437,6 +449,13 @@ public class Gui extends JFrame implements KeyListener {
                         jlaBoss.setVisible(false);
                         sounds at = new sounds("sound/title.wav");
                         at.start();
+
+                        endtimer.schedule(endTimerTask,5000);
+                        System.out.println("正在停止");
+
+                        re.setVisible(false);
+
+                        new GameEnd();
                     }
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -577,6 +596,18 @@ public class Gui extends JFrame implements KeyListener {
                 bullerarr[b].setVisible(false);
                 onPause();
             }
+        }
+    }
+    public class EndTimerTask extends TimerTask {
+        private JFrame re;
+        public EndTimerTask(JFrame re){
+            super();
+            this.re = re;
+        }
+        @Override
+        public void run() {
+            new GameEnd();
+            re.setVisible(false);
         }
     }
 }
